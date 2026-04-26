@@ -9,13 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
-<link href="https://cdn.jsdelivr.net/npm/[email protected]/src/css/regular/style.css" rel="stylesheet" />
+<link href="https://unpkg.com/@phosphor-icons/web" rel="stylesheet" />
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.min.css" rel="stylesheet" />
 
 <style>
+  [x-cloak] { display: none !important; }
   html, body {
     font-family: 'Roboto', sans-serif;
     font-weight: 300;
@@ -23,6 +24,15 @@
     background: #fafaf7;
     color: #1f1f1f;
     -webkit-font-smoothing: antialiased;
+  }
+  @media (max-width: 980px) {
+    main { grid-template-columns: 1fr !important; }
+    aside {
+      position: relative !important;
+      top: 0 !important;
+      max-height: none !important;
+      overflow-y: visible !important;
+    }
   }
   h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.01em; }
   .num { font-variant-numeric: tabular-nums; }
@@ -166,10 +176,10 @@
 </style>
 </head>
 
-<body x-data="trip()" x-cloak>
+<body x-data="trip" x-cloak>
 
 <header class="border-b border-stone-200 bg-white">
-  <div class="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between">
+  <div class="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
     <div class="flex items-center gap-3">
       <i class="ph ph-airplane-takeoff" style="font-size: 1.6rem; color: #1f1f1f;"></i>
       <div>
@@ -525,11 +535,9 @@
   </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/cdn.min.js" defer></script>
-
 <script>
-function trip() {
-  return {
+document.addEventListener('alpine:init', () => {
+  Alpine.data('trip', () => ({
     // ====== AYARLAR ======
     days: 12,
     people: 4,
@@ -799,9 +807,11 @@ function trip() {
       this.foodTier = 'mid';
       this.souvenirBudget = 4500;
     }
-  }
-}
+  }));
+});
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/cdn.min.js" defer></script>
 
 </body>
 </html>

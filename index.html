@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kurban Bayramı Tatil Planlayıcı — Sefaköy çıkışlı</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/[email protected]/src/css/regular/style.css" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.min.css" rel="stylesheet" />
+
+<style>
+  html, body {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    background: #fafaf7;
+    color: #1f1f1f;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.01em; }
+  .num { font-variant-numeric: tabular-nums; }
+  input[type="range"] { accent-color: #1f1f1f; }
+  .pill {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .25rem .65rem; border-radius: 999px;
+    background: #f1efe8; color: #2c2c2a;
+    font-size: 0.8125rem; font-weight: 400;
+  }
+  .pill-blue { background: #e6f1fb; color: #0c447c; }
+  .pill-teal { background: #e1f5ee; color: #085041; }
+  .pill-amber { background: #faeeda; color: #854f0b; }
+  .pill-red { background: #fcebeb; color: #791f1f; }
+  .card {
+    background: #ffffff;
+    border: 1px solid #ece9e0;
+    border-radius: 12px;
+  }
+  .seg-btn {
+    flex: 1; padding: .55rem .5rem;
+    background: #ffffff; border: 1px solid #e7e3d8;
+    font-size: 0.875rem; font-weight: 400;
+    cursor: pointer; transition: all .15s;
+  }
+  .seg-btn:hover { background: #f5f3ec; }
+  .seg-btn.active {
+    background: #1f1f1f; color: #fafaf7; border-color: #1f1f1f;
+  }
+  .seg-btn:first-child { border-radius: 8px 0 0 8px; }
+  .seg-btn:last-child { border-radius: 0 8px 8px 0; }
+  .seg-btn:not(:last-child) { border-right: none; }
+
+  .check-row {
+    display: flex; align-items: center; gap: .65rem;
+    padding: .5rem .25rem;
+    border-bottom: 1px dashed #ece9e0;
+    font-size: 0.9375rem;
+  }
+  .check-row:last-child { border-bottom: none; }
+  .check-row input[type="checkbox"] {
+    width: 1.05rem; height: 1.05rem;
+    accent-color: #1f1f1f;
+    flex-shrink: 0;
+  }
+  .check-row .name { flex: 1; }
+  .check-row .price {
+    font-variant-numeric: tabular-nums;
+    color: #5f5e5a;
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+
+  .stat {
+    background: #ffffff;
+    border: 1px solid #ece9e0;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+  }
+  .stat .label {
+    font-size: 0.8125rem; color: #5f5e5a;
+    text-transform: uppercase; letter-spacing: .05em;
+    font-weight: 400;
+  }
+  .stat .value {
+    font-size: 1.5rem; font-weight: 500;
+    color: #1f1f1f;
+    margin-top: .25rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .sub { font-size: 0.8125rem; color: #888780; margin-top: .15rem; font-weight: 400; }
+
+  .total-card {
+    background: #1f1f1f; color: #fafaf7;
+    border: 1px solid #1f1f1f;
+  }
+  .total-card .label { color: #b4b2a9; }
+  .total-card .value { color: #fafaf7; font-size: 2rem; }
+
+  .breakdown-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .75rem 0;
+    border-bottom: 1px solid #ece9e0;
+    font-size: 0.9375rem;
+  }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row .lbl { display: flex; align-items: center; gap: .55rem; }
+  .breakdown-row .lbl i { font-size: 1.1rem; color: #5f5e5a; }
+  .breakdown-row .amt { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  .day-row {
+    display: grid; grid-template-columns: 56px 1fr;
+    padding: .85rem 0;
+    border-bottom: 1px solid #ece9e0;
+    gap: 1rem;
+    font-size: 0.9375rem;
+  }
+  .day-row:last-child { border-bottom: none; }
+  .day-num {
+    font-size: 0.75rem; color: #888780;
+    text-transform: uppercase; letter-spacing: .05em;
+    font-weight: 500;
+    padding-top: .15rem;
+  }
+  .day-title { font-weight: 500; color: #1f1f1f; margin-bottom: .15rem; }
+  .day-meta { font-size: 0.8125rem; color: #5f5e5a; font-weight: 400; }
+
+  .group-title {
+    font-size: 0.75rem; color: #5f5e5a;
+    text-transform: uppercase; letter-spacing: .08em;
+    font-weight: 500;
+    margin: 1.25rem 0 .5rem 0;
+    display: flex; align-items: center; gap: .4rem;
+  }
+
+  .scroll-box { max-height: 360px; overflow-y: auto; padding-right: .25rem; }
+  .scroll-box::-webkit-scrollbar { width: 6px; }
+  .scroll-box::-webkit-scrollbar-track { background: transparent; }
+  .scroll-box::-webkit-scrollbar-thumb { background: #d3d1c7; border-radius: 3px; }
+
+  details > summary { cursor: pointer; list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary i.chevron { transition: transform .2s; }
+  details[open] > summary i.chevron { transform: rotate(90deg); }
+
+  @media print {
+    aside { display: none !important; }
+    main { grid-template-columns: 1fr !important; }
+    body { background: white; }
+  }
+
+  .config-section { padding: 1.1rem 1.1rem; border-bottom: 1px solid #ece9e0; }
+  .config-section:last-child { border-bottom: none; }
+  .config-label {
+    font-size: 0.8125rem; font-weight: 500; color: #1f1f1f;
+    margin-bottom: .55rem; display: flex; align-items: center; gap: .4rem;
+    text-transform: uppercase; letter-spacing: .03em;
+  }
+  .config-label i { color: #5f5e5a; }
+  .hint { font-size: 0.8125rem; color: #888780; margin-top: .35rem; font-weight: 400; }
+</style>
+</head>
+
+<body x-data="trip()" x-cloak>
+
+<header class="border-b border-stone-200 bg-white">
+  <div class="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <i class="ph ph-airplane-takeoff" style="font-size: 1.6rem; color: #1f1f1f;"></i>
+      <div>
+        <h1 class="text-xl">Kurban Bayramı Tatil Planlayıcı</h1>
+        <p class="text-sm text-stone-500" style="font-weight: 300;">Sefaköy çıkışlı, Akdeniz–Ege rotası, 4 kişilik aile</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="pill pill-blue"><i class="ph ph-calendar"></i><span x-text="days + ' gün'"></span></span>
+      <span class="pill pill-teal"><i class="ph ph-users"></i><span x-text="people + ' kişi'"></span></span>
+      <button @click="window.print()" class="ml-2 px-3 py-2 rounded-lg border border-stone-300 hover:bg-stone-50 text-sm flex items-center gap-1.5">
+        <i class="ph ph-printer"></i><span>Yazdır</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[1400px] mx-auto px-6 py-6 grid gap-6" style="grid-template-columns: 380px 1fr;">
+
+  <!-- ============= SOL: KONFİGÜRASYON ============= -->
+  <aside class="card self-start sticky top-4" style="max-height: calc(100vh - 2rem); overflow-y: auto;">
+
+    <!-- Gün sayısı -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-calendar-blank"></i>Tatil süresi</div>
+      <div class="flex items-center gap-3">
+        <input type="range" min="7" max="15" step="1" x-model.number="days" class="flex-1" />
+        <span class="num font-medium" style="min-width: 60px; text-align: right;" x-text="days + ' gün'"></span>
+      </div>
+      <p class="hint">7–15 gün arası seçim. Otel ve çadır gece sayısı toplamı tatil süresine eşitlenir.</p>
+    </div>
+
+    <!-- Kişi sayısı -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-user"></i>Aile büyüklüğü</div>
+      <div class="flex items-center gap-3">
+        <input type="range" min="2" max="6" step="1" x-model.number="people" class="flex-1" />
+        <span class="num font-medium" style="min-width: 60px; text-align: right;" x-text="people + ' kişi'"></span>
+      </div>
+      <p class="hint">Aktivite ve yemek hesaplamaları kişi sayısı ile çarpılır.</p>
+    </div>
+
+    <!-- Rota senaryosu -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-map-trifold"></i>Dönüş rotası senaryosu</div>
+      <div class="flex">
+        <button @click="routeScenario='A'" class="seg-btn" :class="{'active': routeScenario==='A'}">A · Doğa</button>
+        <button @click="routeScenario='B'" class="seg-btn" :class="{'active': routeScenario==='B'}">B · Kültür</button>
+        <button @click="routeScenario='C'" class="seg-btn" :class="{'active': routeScenario==='C'}">C · Ege</button>
+      </div>
+      <p class="hint" x-text="routeDescription"></p>
+    </div>
+
+    <!-- Araç -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-car"></i>Araç sınıfı</div>
+      <div class="flex">
+        <button @click="carType='economy'" class="seg-btn" :class="{'active': carType==='economy'}">Ekonomi</button>
+        <button @click="carType='comfort'" class="seg-btn" :class="{'active': carType==='comfort'}">Komfort</button>
+        <button @click="carType='suv'" class="seg-btn" :class="{'active': carType==='suv'}">SUV</button>
+      </div>
+      <p class="hint" x-text="'Günlük ' + formatTL(carDailyRate[carType])"></p>
+
+      <div class="config-label" style="margin-top: 1rem;"><i class="ph ph-shield-check"></i>Kasko paketi</div>
+      <div class="flex">
+        <button @click="insurance='basic'" class="seg-btn" :class="{'active': insurance==='basic'}">Temel</button>
+        <button @click="insurance='full'" class="seg-btn" :class="{'active': insurance==='full'}">Full + cam/lastik</button>
+      </div>
+
+      <div class="config-label" style="margin-top: 1rem;"><i class="ph ph-gas-pump"></i>Yakıt türü</div>
+      <div class="flex">
+        <button @click="fuelType='gasoline'" class="seg-btn" :class="{'active': fuelType==='gasoline'}">Benzin</button>
+        <button @click="fuelType='diesel'" class="seg-btn" :class="{'active': fuelType==='diesel'}">Dizel</button>
+      </div>
+    </div>
+
+    <!-- Konaklama -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-bed"></i>Otel kalitesi</div>
+      <div class="flex">
+        <button @click="hotelTier='budget'" class="seg-btn" :class="{'active': hotelTier==='budget'}">Bütçe</button>
+        <button @click="hotelTier='mid'" class="seg-btn" :class="{'active': hotelTier==='mid'}">Orta</button>
+        <button @click="hotelTier='lux'" class="seg-btn" :class="{'active': hotelTier==='lux'}">Lüks</button>
+      </div>
+      <p class="hint" x-text="'Gece ' + formatTL(hotelNightly[hotelTier]) + ' (4 kişilik oda, bayram zammı dahil)'"></p>
+
+      <div class="config-label" style="margin-top: 1rem;"><i class="ph ph-tent"></i>Çadır gece sayısı</div>
+      <div class="flex items-center gap-3">
+        <input type="range" min="0" max="6" step="1" x-model.number="campNights" class="flex-1" />
+        <span class="num font-medium" style="min-width: 60px; text-align: right;" x-text="campNights + ' gece'"></span>
+      </div>
+      <p class="hint" x-text="'Geriye kalan ' + hotelNights + ' gece otel olarak hesaplanıyor.'"></p>
+    </div>
+
+    <!-- Yemek -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-fork-knife"></i>Yemek seviyesi</div>
+      <div class="flex">
+        <button @click="foodTier='simple'" class="seg-btn" :class="{'active': foodTier==='simple'}">Sade</button>
+        <button @click="foodTier='mid'" class="seg-btn" :class="{'active': foodTier==='mid'}">Orta</button>
+        <button @click="foodTier='rich'" class="seg-btn" :class="{'active': foodTier==='rich'}">Bol</button>
+      </div>
+      <p class="hint" x-text="'Kişi başı günlük ' + formatTL(foodPerPersonDaily[foodTier])"></p>
+    </div>
+
+    <!-- Aktiviteler -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-confetti"></i>Aktiviteler</div>
+      <div class="scroll-box" style="max-height: 240px;">
+        <template x-for="act in activities" :key="act.id">
+          <label class="check-row">
+            <input type="checkbox" x-model="act.selected" />
+            <span class="name" x-text="act.name"></span>
+            <span class="price" x-text="formatTL(act.perPerson) + '/k'"></span>
+          </label>
+        </template>
+      </div>
+    </div>
+
+    <!-- Hediyelik -->
+    <div class="config-section">
+      <div class="config-label"><i class="ph ph-gift"></i>Hediyelik bütçesi</div>
+      <div class="flex items-center gap-3">
+        <input type="range" min="0" max="15000" step="500" x-model.number="souvenirBudget" class="flex-1" />
+        <span class="num font-medium" style="min-width: 90px; text-align: right;" x-text="formatTL(souvenirBudget)"></span>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <div class="config-section">
+      <button @click="resetAll()" class="w-full px-3 py-2 rounded-lg border border-stone-300 hover:bg-stone-50 text-sm flex items-center justify-center gap-1.5">
+        <i class="ph ph-arrow-counter-clockwise"></i><span>Varsayılana dön</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============= SAĞ: SONUÇLAR ============= -->
+  <section>
+
+    <!-- Üst özet kartları -->
+    <div class="grid grid-cols-4 gap-3 mb-6">
+      <div class="stat total-card col-span-2">
+        <div class="label">Toplam tahmini bütçe</div>
+        <div class="value num" x-text="formatTL(totalBudget)"></div>
+        <div class="sub" x-text="'Acil rezerv (%10) ' + formatTL(reserveBudget) + ' dahil'"></div>
+      </div>
+      <div class="stat">
+        <div class="label">Toplam mesafe</div>
+        <div class="value num" x-text="totalKm.toLocaleString('tr-TR') + ' km'"></div>
+        <div class="sub" x-text="'≈ ' + Math.round(totalKm/280) + ' saat sürüş'"></div>
+      </div>
+      <div class="stat">
+        <div class="label">Günlük ortalama</div>
+        <div class="value num" x-text="formatTL(totalBudget/days)"></div>
+        <div class="sub" x-text="'Kişi başı ' + formatTL(totalBudget/days/people) + '/gün'"></div>
+      </div>
+    </div>
+
+    <!-- Kalem kalem detay -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-lg mb-2 flex items-center gap-2"><i class="ph ph-list-bullets"></i>Bütçe kalemleri</h3>
+      <p class="text-sm text-stone-500 mb-3" style="font-weight: 300;">Her kalem soldaki seçimlere göre canlı güncellenir. Yüzde, alt-toplam içindeki paydır.</p>
+
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-car-profile"></i>Araç kiralama (kasko dahil)</div>
+        <div class="amt num" x-text="formatTL(carCost)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-gas-pump"></i>Yakıt</div>
+        <div class="amt num" x-text="formatTL(fuelCost)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-toll-booth"></i>HGS / otoyol</div>
+        <div class="amt num" x-text="formatTL(hgs)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-bed"></i>Otel <span class="text-xs text-stone-500" x-text="'(' + hotelNights + ' gece)'"></span></div>
+        <div class="amt num" x-text="formatTL(hotelCost)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-tent"></i>Çadır kamp <span class="text-xs text-stone-500" x-text="'(' + campNights + ' gece)'"></span></div>
+        <div class="amt num" x-text="formatTL(campCost)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-fork-knife"></i>Yemek <span class="text-xs text-stone-500" x-text="'(' + days + ' × ' + people + ' kişi)'"></span></div>
+        <div class="amt num" x-text="formatTL(foodCost)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-confetti"></i>Aktivite ve giriş ücretleri</div>
+        <div class="amt num" x-text="formatTL(activityCost)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-backpack"></i>Kamp ekipmanı (tek seferlik yatırım)</div>
+        <div class="amt num" x-text="formatTL(equipmentCost)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-gift"></i>Hediyelik / hatıra</div>
+        <div class="amt num" x-text="formatTL(souvenirBudget)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl" style="font-weight: 500;"><i class="ph ph-equals"></i>Alt toplam</div>
+        <div class="amt num" style="font-weight: 500;" x-text="formatTL(subtotal)"></div>
+      </div>
+      <div class="breakdown-row">
+        <div class="lbl"><i class="ph ph-warning-circle"></i>Acil rezerv (%10)</div>
+        <div class="amt num" x-text="formatTL(reserveBudget)"></div>
+      </div>
+      <div class="breakdown-row" style="border-top: 2px solid #1f1f1f; margin-top: .5rem; padding-top: 1rem;">
+        <div class="lbl" style="font-weight: 500; font-size: 1.0625rem;"><i class="ph ph-coin-vertical"></i>Genel toplam</div>
+        <div class="amt num" style="font-weight: 500; font-size: 1.125rem;" x-text="formatTL(totalBudget)"></div>
+      </div>
+    </div>
+
+    <!-- Mesafe ve yakıt detay -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      <div class="card p-5">
+        <h3 class="text-base mb-3 flex items-center gap-2"><i class="ph ph-path"></i>Mesafe dağılımı</h3>
+        <div class="space-y-2">
+          <template x-for="seg in routeSegments" :key="seg.label">
+            <div class="flex justify-between items-center text-sm">
+              <span x-text="seg.label" class="text-stone-700"></span>
+              <span class="num text-stone-500" x-text="seg.km.toLocaleString('tr-TR') + ' km'"></span>
+            </div>
+          </template>
+          <div class="flex justify-between items-center text-sm pt-2 mt-2 border-t border-stone-200" style="font-weight: 500;">
+            <span>Toplam</span>
+            <span class="num" x-text="totalKm.toLocaleString('tr-TR') + ' km'"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <h3 class="text-base mb-3 flex items-center gap-2"><i class="ph ph-gas-pump"></i>Yakıt detayı</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-stone-700">Yakıt türü</span><span x-text="fuelType==='gasoline' ? 'Benzin' : 'Dizel'"></span></div>
+          <div class="flex justify-between"><span class="text-stone-700">Litre fiyatı</span><span class="num" x-text="formatTL(fuelPrice[fuelType])"></span></div>
+          <div class="flex justify-between"><span class="text-stone-700">Tüketim (100 km)</span><span class="num" x-text="fuelConsumption[fuelType] + ' L'"></span></div>
+          <div class="flex justify-between"><span class="text-stone-700">Toplam litre</span><span class="num" x-text="Math.round(totalKm * fuelConsumption[fuelType] / 100) + ' L'"></span></div>
+          <div class="flex justify-between pt-2 mt-2 border-t border-stone-200" style="font-weight: 500;">
+            <span>Yakıt maliyeti</span><span class="num" x-text="formatTL(fuelCost)"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gün gün rota -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-lg mb-2 flex items-center gap-2"><i class="ph ph-map-pin-line"></i>Gün gün rota</h3>
+      <p class="text-sm text-stone-500 mb-3" style="font-weight: 300;">Plan, seçtiğin gün sayısı, çadır gecesi sayısı ve dönüş senaryosuna göre otomatik üretilir.</p>
+      <div>
+        <template x-for="(d, idx) in dailyPlan" :key="idx">
+          <div class="day-row">
+            <div class="day-num" x-text="'Gün ' + (idx+1)"></div>
+            <div>
+              <div class="day-title" x-text="d.title"></div>
+              <div class="day-meta" x-text="d.meta"></div>
+              <div class="mt-1 flex gap-1.5 flex-wrap">
+                <template x-for="tag in d.tags" :key="tag.label">
+                  <span class="pill" :class="tag.cls" x-text="tag.label"></span>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Şehir ve aktivite kart şeritleri -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-lg mb-3 flex items-center gap-2"><i class="ph ph-confetti"></i>Seçili aktiviteler</h3>
+      <div class="grid grid-cols-2 gap-2">
+        <template x-for="act in selectedActivities" :key="act.id">
+          <div class="flex items-center justify-between p-3 rounded-lg" style="background: #f5f3ec;">
+            <div class="flex items-center gap-2">
+              <i class="ph ph-check-circle" style="color: #1d9e75;"></i>
+              <span class="text-sm" x-text="act.name"></span>
+            </div>
+            <span class="num text-sm text-stone-600" x-text="formatTL(act.perPerson * people)"></span>
+          </div>
+        </template>
+        <template x-if="selectedActivities.length === 0">
+          <div class="text-sm text-stone-500 col-span-2 italic" style="font-weight: 300;">
+            Soldaki aktivite listesinden seçim yapmadın.
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Alışveriş listesi (kategorize, fiyatlı) -->
+    <div class="card p-5 mb-6">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-lg flex items-center gap-2"><i class="ph ph-shopping-cart"></i>Alışveriş listesi</h3>
+        <span class="pill pill-amber num" x-text="'Toplam ' + formatTL(equipmentCost)"></span>
+      </div>
+      <p class="text-sm text-stone-500 mb-3" style="font-weight: 300;">Her ürünün gösterilen fiyatı min–max aralığının ortalamasıdır. Çadır ve ekipman tek seferlik yatırımdır; bir sonraki tatilde tekrar harcamazsın.</p>
+
+      <template x-for="(items, cat) in equipmentByCategory" :key="cat">
+        <details open class="mb-3">
+          <summary class="group-title">
+            <i class="ph ph-caret-right chevron"></i>
+            <span x-text="cat"></span>
+            <span class="text-stone-400 ml-1" x-text="'(' + items.filter(i=>i.selected).length + '/' + items.length + ')'"></span>
+            <span class="ml-auto num text-stone-600" style="text-transform: none; letter-spacing: 0; font-size: 0.8125rem;"
+                  x-text="formatTL(items.filter(i=>i.selected).reduce((s,i)=>s+(i.priceMin+i.priceMax)/2, 0))"></span>
+          </summary>
+          <div>
+            <template x-for="item in items" :key="item.name">
+              <label class="check-row">
+                <input type="checkbox" x-model="item.selected" />
+                <span class="name" x-text="item.name"></span>
+                <span class="price num" x-text="formatTL(item.priceMin) + ' – ' + formatTL(item.priceMax)"></span>
+              </label>
+            </template>
+          </div>
+        </details>
+      </template>
+    </div>
+
+    <!-- Senaryo karşılaştırma -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-lg mb-3 flex items-center gap-2"><i class="ph ph-scales"></i>Senaryo karşılaştırma</h3>
+      <p class="text-sm text-stone-500 mb-4" style="font-weight: 300;">Aynı gün sayısı (<span x-text="days"></span> gün) ve kişi sayısı (<span x-text="people"></span> kişi) için üç bütçe seviyesi.</p>
+      <div class="grid grid-cols-3 gap-3">
+        <template x-for="sc in scenarioComparison" :key="sc.name">
+          <div class="p-4 rounded-lg" :style="sc.featured ? 'background:#1f1f1f;color:#fafaf7;' : 'background:#f5f3ec;'">
+            <div class="text-xs uppercase tracking-wide opacity-70 mb-1" x-text="sc.name"></div>
+            <div class="text-2xl num" style="font-weight: 500;" x-text="formatTL(sc.amount)"></div>
+            <div class="text-xs opacity-70 mt-2" style="font-weight: 300;" x-text="sc.note"></div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Risk ve hatırlatmalar -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-lg mb-3 flex items-center gap-2"><i class="ph ph-warning"></i>Risk ve hatırlatmalar</h3>
+      <ul class="space-y-2 text-sm text-stone-700">
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Araç rezervasyonu</strong> · Yenibosna Avis/Budget'ı en geç Nisan sonunda kilitle. Yolcu360 ve Enuygun ile karşılaştır, ana firma sitesinden bitir (depozit iadesi sorunsuz).</span></li>
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Otel zamları</strong> · Bayram döneminde otel fiyatları %40–100 zamlanır. En geç 1–2 hafta önce kesinleştir.</span></li>
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Datça benzin</strong> · Yarımada içi az istasyon, kuyruk olur. Marmaris çıkışında deposu doldur.</span></li>
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Çadır prova</strong> · Çadırı evde bir kez kur, kamp alanında deneme zamanı yok.</span></li>
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Trafik</strong> · Bayram sabahları yol boş, akşam 16–22 yoğun. Uzun etabı sabah erken yap.</span></li>
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Mobil veri</strong> · 30+ GB pakete geç. Yandex Navigasyon offline harita Datça-Kaş arası şart.</span></li>
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Saklıkent</strong> · Mayısta su soğuk; çocuk için sandalet + havlu hazır.</span></li>
+        <li class="flex gap-2"><i class="ph ph-circle-fill text-stone-400" style="font-size: 0.5rem; margin-top: 0.5rem; flex-shrink: 0;"></i><span><strong style="font-weight: 500;">Nakit</strong> · Köy pazarı, otopark, küçük büfeler POS almıyor. 3.000–5.000 TL nakit bulundur.</span></li>
+      </ul>
+    </div>
+
+    <footer class="text-xs text-stone-400 text-center py-3" style="font-weight: 300;">
+      Tüm fiyatlar Mayıs 2026 tahminidir · Roboto · Flowbite · Alpine.js · Phosphor
+    </footer>
+
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/cdn.min.js" defer></script>
+
+<script>
+function trip() {
+  return {
+    // ====== AYARLAR ======
+    days: 12,
+    people: 4,
+    routeScenario: 'A',
+    carType: 'comfort',
+    insurance: 'full',
+    fuelType: 'gasoline',
+    hotelTier: 'mid',
+    campNights: 3,
+    foodTier: 'mid',
+    souvenirBudget: 4500,
+
+    // ====== SABİT VERİLER ======
+    carDailyRate: { economy: 3000, comfort: 4000, suv: 6000 },
+    insuranceCost: { basic: 0, full: 12000 },
+    fuelPrice: { gasoline: 62.44, diesel: 71.76 },
+    fuelConsumption: { gasoline: 6.5, diesel: 5.5 },
+    hotelNightly: { budget: 3500, mid: 5500, lux: 11000 },
+    campNightly: 350,
+    foodPerPersonDaily: { simple: 400, mid: 650, rich: 1000 },
+    hgs: 900,
+
+    // ====== ROTA ======
+    routeBaseKm: { A: 2900, B: 2750, C: 3300 },
+    routeDescriptions: {
+      A: 'Doğa: Datça → Köyceğiz/Dalyan → Salda → Pamukkale → Afyon → Eskişehir → İstanbul. Önerilen rota.',
+      B: 'Kültür: Datça → Knidos → Marmaris → Afrodisias → Pamukkale → Eskişehir → İstanbul.',
+      C: 'Ege sahili: Akyaka → Bodrum → Kuşadası → Çeşme → Bergama → Çanakkale. Yoğun, zaman dar.'
+    },
+
+    // ====== AKTİVİTELER ======
+    activities: [
+      { id: 'kekova', name: 'Kekova batık şehir tekne turu', perPerson: 1250, selected: true },
+      { id: 'dalyan', name: 'Dalyan tekne + İztuzu plajı', perPerson: 1000, selected: true },
+      { id: 'pamukkale', name: 'Pamukkale–Hierapolis girişi', perPerson: 500, selected: true },
+      { id: 'aspendos', name: 'Aspendos antik tiyatrosu', perPerson: 200, selected: true },
+      { id: 'termessos', name: 'Termessos antik kenti', perPerson: 200, selected: false },
+      { id: 'akvaryum', name: 'Antalya Akvaryum (çocuk için)', perPerson: 800, selected: false },
+      { id: 'olympos', name: 'Olympos teleferik', perPerson: 1000, selected: false },
+      { id: 'saklikent', name: 'Saklıkent kanyonu', perPerson: 250, selected: true },
+      { id: 'meis', name: 'Meis adası günübirlik (pasaport)', perPerson: 4500, selected: false },
+      { id: 'duden', name: 'Düden şelalesi (üst + alt)', perPerson: 100, selected: true },
+      { id: 'knidos', name: 'Knidos antik kenti (Datça ucu)', perPerson: 150, selected: true },
+      { id: 'kaputas', name: 'Kaputaş + Patara plajı', perPerson: 0, selected: true },
+      { id: 'alanyakale', name: 'Alanya kalesi + Damlataş', perPerson: 250, selected: true },
+      { id: 'dim', name: 'Dim mağarası + Dim çayı', perPerson: 350, selected: false },
+      { id: 'salda', name: 'Salda Gölü (Türkiye Maldivleri)', perPerson: 0, selected: true },
+    ],
+
+    // ====== EKİPMAN ======
+    equipment: [
+      // Kamp
+      { cat: 'Kamp ekipmanı', name: '4 kişilik anlık kurulum çadırı (Decathlon MH100)', priceMin: 3500, priceMax: 6000, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Elektrikli pompa (12V çakmak girişi)', priceMin: 700, priceMax: 1500, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Kamp sandalyesi × 4', priceMin: 3200, priceMax: 6000, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Piknik tüpü + ocak + ızgara aparatı', priceMin: 1500, priceMax: 3000, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Uyku tulumu × 4', priceMin: 3200, priceMax: 6000, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Soğutma çantası 30L+ (cool box)', priceMin: 1500, priceMax: 3000, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Kafa lambası × 2 + fener', priceMin: 800, priceMax: 1500, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Powerbank 20.000 mAh × 2', priceMin: 1500, priceMax: 3000, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Kamp masası katlanır', priceMin: 1000, priceMax: 2000, selected: false },
+      { cat: 'Kamp ekipmanı', name: 'Tencere-tabak-çatal-bardak seti (melamin)', priceMin: 1000, priceMax: 2000, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Şişme yastık × 4', priceMin: 600, priceMax: 1200, selected: false },
+      { cat: 'Kamp ekipmanı', name: 'Yer minderi / branda', priceMin: 400, priceMax: 800, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Çok amaçlı çakı (Leatherman tarzı)', priceMin: 800, priceMax: 2000, selected: false },
+      { cat: 'Kamp ekipmanı', name: 'Termos kupa + sıcak içecek termosu', priceMin: 600, priceMax: 1200, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Çakmak + uzun şömine kibriti', priceMin: 100, priceMax: 200, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Bulaşık deterjanı + sünger + leğen', priceMin: 300, priceMax: 600, selected: true },
+      { cat: 'Kamp ekipmanı', name: 'Çadır içi yedek kazık seti', priceMin: 100, priceMax: 250, selected: false },
+
+      // İlkyardım
+      { cat: 'İlkyardım & sağlık', name: 'İlkyardım çantası komple', priceMin: 800, priceMax: 1500, selected: true },
+      { cat: 'İlkyardım & sağlık', name: 'Çocuk ilaçları (ateş şurup, antihistaminik)', priceMin: 400, priceMax: 800, selected: true },
+      { cat: 'İlkyardım & sağlık', name: 'Güneş yanığı sonrası jel (aloe vera)', priceMin: 200, priceMax: 400, selected: true },
+      { cat: 'İlkyardım & sağlık', name: 'Dudak balsamı SPF', priceMin: 100, priceMax: 250, selected: true },
+      { cat: 'İlkyardım & sağlık', name: 'Sinek kovucu sprey × 2', priceMin: 200, priceMax: 500, selected: true },
+      { cat: 'İlkyardım & sağlık', name: 'Güneş kremi SPF50 × 2', priceMin: 600, priceMax: 1500, selected: true },
+      { cat: 'İlkyardım & sağlık', name: 'Antiseptik krem + yara bandı seti', priceMin: 200, priceMax: 400, selected: true },
+
+      // Kişisel bakım
+      { cat: 'Kişisel bakım', name: 'Hijyenik ıslak + kuru mendil', priceMin: 200, priceMax: 400, selected: true },
+      { cat: 'Kişisel bakım', name: 'Mikrofiber plaj havlusu × 4', priceMin: 800, priceMax: 1600, selected: true },
+      { cat: 'Kişisel bakım', name: 'Banyo terliği + plaj sandaleti', priceMin: 600, priceMax: 1200, selected: true },
+      { cat: 'Kişisel bakım', name: 'Şampuan/sabun/diş macunu seyahat boyu', priceMin: 200, priceMax: 400, selected: true },
+      { cat: 'Kişisel bakım', name: 'El dezenfektanı', priceMin: 100, priceMax: 200, selected: true },
+      { cat: 'Kişisel bakım', name: 'Tuvalet kağıdı yedeği', priceMin: 150, priceMax: 300, selected: true },
+
+      // Araç içi
+      { cat: 'Araç içi aksesuar', name: 'Telefon tutucu (havalandırma)', priceMin: 200, priceMax: 500, selected: true },
+      { cat: 'Araç içi aksesuar', name: 'Araç USB hızlı şarj (ikili)', priceMin: 200, priceMax: 500, selected: true },
+      { cat: 'Araç içi aksesuar', name: 'Bluetooth FM transmitter (eski araç için)', priceMin: 300, priceMax: 800, selected: false },
+      { cat: 'Araç içi aksesuar', name: 'Ön cam güneşliği', priceMin: 150, priceMax: 350, selected: true },
+      { cat: 'Araç içi aksesuar', name: 'Cigarette lighter inverter (laptop için)', priceMin: 400, priceMax: 1200, selected: false },
+
+      // Alet
+      { cat: 'Alet edevat', name: 'Şarjlı matkap (varsa atla)', priceMin: 1500, priceMax: 4000, selected: false },
+      { cat: 'Alet edevat', name: 'Papağan pense + çekiç', priceMin: 300, priceMax: 700, selected: true },
+
+      // Diğer
+      { cat: 'Diğer', name: 'AA + AAA pil seti', priceMin: 150, priceMax: 300, selected: true },
+      { cat: 'Diğer', name: 'USB-C / Lightning kablo yedek', priceMin: 200, priceMax: 400, selected: true },
+      { cat: 'Diğer', name: 'Çöp poşeti büyük rulo', priceMin: 100, priceMax: 200, selected: true },
+      { cat: 'Diğer', name: 'Kurutma ipi + mandal', priceMin: 100, priceMax: 200, selected: true },
+      { cat: 'Diğer', name: 'Ses bombası (oyuncak)', priceMin: 100, priceMax: 300, selected: true },
+    ],
+
+    // ====== HESAPLAMALAR ======
+    get routeDescription() { return this.routeDescriptions[this.routeScenario]; },
+    get hotelNights() { return Math.max(0, this.days - this.campNights); },
+    get totalKm() {
+      let base = this.routeBaseKm[this.routeScenario];
+      // gün sayısına göre küçük ölçek (kısa tatilde bazı uzantılar atlanır)
+      const factor = Math.min(1, this.days / 12);
+      return Math.round(base * (0.7 + 0.3 * factor));
+    },
+
+    get carCost() {
+      return this.days * this.carDailyRate[this.carType] + this.insuranceCost[this.insurance];
+    },
+    get fuelCost() {
+      const consumption = this.fuelConsumption[this.fuelType];
+      const price = this.fuelPrice[this.fuelType];
+      return Math.round(this.totalKm * consumption / 100 * price);
+    },
+    get hotelCost() { return this.hotelNights * this.hotelNightly[this.hotelTier]; },
+    get campCost() { return this.campNights * this.campNightly; },
+    get accommodationCost() { return this.hotelCost + this.campCost; },
+    get foodCost() { return this.days * this.people * this.foodPerPersonDaily[this.foodTier]; },
+    get activityCost() {
+      return this.activities.filter(a => a.selected).reduce((sum, a) => sum + a.perPerson * this.people, 0);
+    },
+    get equipmentCost() {
+      return Math.round(this.equipment.filter(e => e.selected).reduce((sum, e) => sum + (e.priceMin + e.priceMax) / 2, 0));
+    },
+    get subtotal() {
+      return this.carCost + this.fuelCost + this.hgs + this.accommodationCost + this.foodCost + this.activityCost + this.equipmentCost + this.souvenirBudget;
+    },
+    get reserveBudget() { return Math.round(this.subtotal * 0.10); },
+    get totalBudget() { return this.subtotal + this.reserveBudget; },
+
+    get selectedActivities() { return this.activities.filter(a => a.selected); },
+
+    get equipmentByCategory() {
+      const grouped = {};
+      this.equipment.forEach(e => {
+        if (!grouped[e.cat]) grouped[e.cat] = [];
+        grouped[e.cat].push(e);
+      });
+      return grouped;
+    },
+
+    get routeSegments() {
+      const f = (km) => Math.round(km * (0.7 + 0.3 * Math.min(1, this.days / 12)));
+      const A = [
+        { label: 'Sefaköy → Alanya (Eskişehir/Konya molası)', km: f(720) },
+        { label: 'Alanya → Antalya', km: f(140) },
+        { label: 'Antalya → Kaş (Olympos)', km: f(190) },
+        { label: 'Kaş → Datça (Saklıkent, Fethiye)', km: f(320) },
+        { label: 'Datça → Köyceğiz/Dalyan', km: f(150) },
+        { label: 'Köyceğiz → Salda → Pamukkale', km: f(280) },
+        { label: 'Pamukkale → Afyon → Eskişehir', km: f(450) },
+        { label: 'Eskişehir → Sefaköy', km: f(350) },
+      ];
+      const B = [
+        { label: 'Sefaköy → Alanya', km: f(720) },
+        { label: 'Alanya → Antalya', km: f(140) },
+        { label: 'Antalya → Kaş', km: f(190) },
+        { label: 'Kaş → Datça (Knidos)', km: f(320) },
+        { label: 'Datça → Marmaris → Afrodisias', km: f(280) },
+        { label: 'Afrodisias → Pamukkale', km: f(120) },
+        { label: 'Pamukkale → Eskişehir', km: f(630) },
+        { label: 'Eskişehir → Sefaköy', km: f(350) },
+      ];
+      const C = [
+        { label: 'Sefaköy → Alanya', km: f(720) },
+        { label: 'Alanya → Antalya', km: f(140) },
+        { label: 'Antalya → Kaş', km: f(190) },
+        { label: 'Kaş → Datça', km: f(320) },
+        { label: 'Datça → Akyaka/Gökova', km: f(180) },
+        { label: 'Akyaka → Bodrum → Kuşadası', km: f(220) },
+        { label: 'Kuşadası → Çeşme', km: f(150) },
+        { label: 'Çeşme → Bergama → Çanakkale', km: f(380) },
+        { label: 'Çanakkale → Sefaköy', km: f(330) },
+      ];
+      return { A, B, C }[this.routeScenario];
+    },
+
+    get scenarioComparison() {
+      const buildScenario = (carDaily, hotelN, foodPP, label, note, featured = false) => {
+        const car = this.days * carDaily + this.insuranceCost.full;
+        const fuel = Math.round(this.totalKm * this.fuelConsumption.gasoline / 100 * this.fuelPrice.gasoline);
+        const hotel = this.hotelNights * hotelN;
+        const camp = this.campNights * this.campNightly;
+        const food = this.days * this.people * foodPP;
+        const act = this.activityCost;
+        const eq = this.equipmentCost;
+        const sub = car + fuel + this.hgs + hotel + camp + food + act + eq + this.souvenirBudget;
+        const total = sub + Math.round(sub * 0.1);
+        return { name: label, amount: total, note, featured };
+      };
+      return [
+        buildScenario(3000, 3500, 400, 'Ekonomi', 'Bütçe otel + sade yemek + ekonomi araç'),
+        buildScenario(4000, 5500, 650, 'Konfor', 'Orta otel + komfort araç + dengeli yemek', true),
+        buildScenario(6000, 11000, 1000, 'Lüks', '4–5 yıldız + SUV + bol restoran'),
+      ];
+    },
+
+    get dailyPlan() {
+      const d = this.days;
+      const camp = this.campNights;
+      const route = this.routeScenario;
+      const plan = [];
+
+      const t = (title, meta, tags=[]) => ({ title, meta, tags });
+      const tag = (label, cls='') => ({ label, cls });
+
+      // İlk 4 gün sabit: yol + Alanya + Antalya
+      plan.push(t('Sefaköy → Alanya', 'Eskişehir/Konya molası, ~720 km, 9–10 saat', [tag('Yol', 'pill-blue'), tag('Otel 1', 'pill-amber')]));
+      if (d >= 8) plan.push(t('Alanya tam gün', 'Kale, Damlataş, Kleopatra plajı, Hakan abi yemeği', [tag('Plaj', 'pill-teal'), tag('Otel 2', 'pill-amber')]));
+      plan.push(t('Alanya → Antalya', '140 km, Aspendos durağı, Kaleiçi akşamı', [tag('Antik kent', ''), tag('Otel 3', 'pill-amber')]));
+      if (d >= 9) plan.push(t('Antalya tam gün', 'Düden şelalesi, Konyaaltı plajı, Kaleiçi gezisi', [tag('Plaj', 'pill-teal'), tag('Otel 4', 'pill-amber')]));
+
+      // Kaş bölgesi (çadır günleri burada toplanır)
+      plan.push(t('Antalya → Kaş', '190 km, Olympos/Çıralı durağı, Yanartaş', [tag('Yol', 'pill-blue'), camp > 0 ? tag('Çadır 1', 'pill-teal') : tag('Otel', 'pill-amber')]));
+      if (camp >= 2 || d >= 7) plan.push(t('Kaş — Kekova tekne turu', 'Batık şehir, Üçağız, Kaleköy', [tag('Tekne', 'pill-blue'), camp >= 2 ? tag('Çadır 2', 'pill-teal') : tag('Otel', 'pill-amber')]));
+      if (camp >= 3 || d >= 8) plan.push(t('Kaş — Kaputaş + Patara', 'Mavi koy ve uzun kumsal, antik kent', [tag('Plaj', 'pill-teal'), camp >= 3 ? tag('Çadır 3', 'pill-teal') : tag('Otel', 'pill-amber')]));
+      if (camp >= 4 || d >= 11) plan.push(t('Kaş — Saklıkent + Patara', 'Kanyon yürüyüşü, plaj, Likya yolu', [tag('Doğa', 'pill-teal'), camp >= 4 ? tag('Çadır 4', 'pill-teal') : tag('Otel', 'pill-amber')]));
+
+      // Datça
+      plan.push(t('Kaş → Datça', '320 km, Saklıkent + Fethiye geçişi', [tag('Yol', 'pill-blue'), tag('Otel/Hakan abi', 'pill-amber')]));
+      if (d >= 9) plan.push(t('Datça merkez + Knidos', 'Yarımada ucu, batık limanlar, kayalıklar', [tag('Antik kent', ''), tag('Otel', 'pill-amber')]));
+
+      // Dönüş senaryolar
+      if (route === 'A') {
+        if (d >= 10) plan.push(t('Datça → Köyceğiz/Dalyan', 'Tekne turu, İztuzu plajı, kaplumbağalar', [tag('Tekne', 'pill-blue'), tag('Otel', 'pill-amber')]));
+        if (d >= 11) plan.push(t('Köyceğiz → Salda → Pamukkale', '"Türkiye Maldivleri" + travertenler', [tag('Doğa', 'pill-teal'), tag('Otel', 'pill-amber')]));
+        if (d >= 12) plan.push(t('Pamukkale-Hierapolis → Afyon kaplıca', 'Sabah travertenler, akşam kaplıca + Eskişehir gece', [tag('Antik kent', ''), tag('Otel', 'pill-amber')]));
+      } else if (route === 'B') {
+        if (d >= 10) plan.push(t('Datça → Marmaris → Afrodisias', 'Bozburun-Selimiye, antik Afrodit kenti', [tag('Antik kent', ''), tag('Otel', 'pill-amber')]));
+        if (d >= 11) plan.push(t('Afrodisias → Pamukkale', 'Travertenler ve Hierapolis', [tag('Doğa', 'pill-teal'), tag('Otel', 'pill-amber')]));
+        if (d >= 12) plan.push(t('Pamukkale → Eskişehir', 'Odunpazarı, Adalar, akşam yemeği', [tag('Şehir', ''), tag('Otel', 'pill-amber')]));
+      } else {
+        if (d >= 10) plan.push(t('Datça → Akyaka → Bodrum', 'Sahil kasabası, Halikarnas Mausoleion', [tag('Plaj', 'pill-teal'), tag('Otel', 'pill-amber')]));
+        if (d >= 11) plan.push(t('Bodrum → Kuşadası → Şirince', 'Efes antik kenti opsiyonel, Şirince tatlısı', [tag('Antik kent', ''), tag('Otel', 'pill-amber')]));
+        if (d >= 12) plan.push(t('Kuşadası → Çeşme/Bergama', 'Akropol, Asklepion, akşam Çeşme', [tag('Antik kent', ''), tag('Otel', 'pill-amber')]));
+      }
+
+      // Son gün: dönüş
+      plan.push(t('Eskişehir/Çanakkale → Sefaköy', '350 km dönüş, aracı Yenibosna teslim', [tag('Yol', 'pill-blue'), tag('Eve dönüş', 'pill-red')]));
+
+      return plan.slice(0, d);
+    },
+
+    formatTL(num) {
+      return new Intl.NumberFormat('tr-TR').format(Math.round(num)) + ' ₺';
+    },
+
+    resetAll() {
+      this.days = 12;
+      this.people = 4;
+      this.routeScenario = 'A';
+      this.carType = 'comfort';
+      this.insurance = 'full';
+      this.fuelType = 'gasoline';
+      this.hotelTier = 'mid';
+      this.campNights = 3;
+      this.foodTier = 'mid';
+      this.souvenirBudget = 4500;
+    }
+  }
+}
+</script>
+
+</body>
+</html>
